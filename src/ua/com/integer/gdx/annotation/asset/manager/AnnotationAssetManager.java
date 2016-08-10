@@ -32,6 +32,8 @@ import ua.com.integer.gdx.annotation.asset.manager.imp.sound.GdxSound;
 import ua.com.integer.gdx.annotation.asset.manager.imp.sound.GdxSoundLoader;
 import ua.com.integer.gdx.annotation.asset.manager.imp.texture.GdxTexture;
 import ua.com.integer.gdx.annotation.asset.manager.imp.texture.GdxTextureLoader;
+import ua.com.integer.gdx.annotation.asset.manager.imp.ttf.GdxTTFFont;
+import ua.com.integer.gdx.annotation.asset.manager.imp.ttf.GdxTTFFontLoader;
 
 public class AnnotationAssetManager implements Disposable {
 	private StringBuilder tmpStringBuilder = new StringBuilder();
@@ -53,12 +55,16 @@ public class AnnotationAssetManager implements Disposable {
 	private AssetManager assetManager;
 	private ObjectMap<Class<? extends Annotation>, AnnotationAssetLoader> loaders = new ObjectMap<>();
 	
+	private FreetypeFontManager fontManager;
+	
 	public AnnotationAssetManager() {
 		this(new InternalFileHandleResolver());
 	}
 
 	public AnnotationAssetManager(FileHandleResolver resolver) {
 		assetManager = new AssetManager(resolver);
+		fontManager = new FreetypeFontManager();
+		
 		addLoader(GdxTextureAtlas.class, new GdxTextureAtlasLoader());
 		addLoader(GdxI18N.class, new GdxI18NLoader());
 		addLoader(GdxImage.class, new GdxImageLoader());
@@ -66,6 +72,7 @@ public class AnnotationAssetManager implements Disposable {
 		addLoader(GdxSound.class, new GdxSoundLoader());
 		addLoader(GdxTextureRegion.class, new GdxTextureRegionLoader());
 		addLoader(GdxTexture.class, new GdxTextureLoader());
+		addLoader(GdxTTFFont.class, new GdxTTFFontLoader());
 	}
 	
 	public AnnotationAssetManager addTextureFolder(String folder) {
@@ -115,6 +122,10 @@ public class AnnotationAssetManager implements Disposable {
 	
 	public AssetManager getAssetManager() {
 		return assetManager;
+	}
+	
+	public FreetypeFontManager getFontManager() {
+		return fontManager;
 	}
 	
 	public AnnotationAssetManager addLoader(Class<? extends Annotation> annotation, AnnotationAssetLoader loader) {
@@ -272,6 +283,7 @@ public class AnnotationAssetManager implements Disposable {
 	@Override
 	public void dispose() {
 		assetManager.dispose();
+		fontManager.dispose();
 	}
 	
 	public String findExistingAssetPath(Array<String> searchFolders, String assetName, Array<String> assetExtensions) {
