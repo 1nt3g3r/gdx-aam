@@ -14,9 +14,9 @@ public class GdxTTFFontLoader extends AnnotationAssetLoader{
 		
 		int fontSize = gdxFont.size();
 		if (gdxFont.percentScreenWidthSize() > 0) {
-			fontSize = (int) ((float) Gdx.graphics.getWidth() * gdxFont.percentScreenWidthSize());
+			fontSize = (int) ((float) Gdx.graphics.getWidth() * 100f / (float) gdxFont.percentScreenWidthSize());
 		} else if (gdxFont.percentScreenHeightSize() > 0) {
-			fontSize = (int) ((float) Gdx.graphics.getHeight() * gdxFont.percentScreenHeightSize());
+			fontSize = (int) ((float) Gdx.graphics.getHeight() * 100f / (float) gdxFont.percentScreenHeightSize());
 		}
 		
 		FreeTypeFontParameter param = new FreeTypeFontParameter();
