@@ -12,6 +12,10 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.Hinting;
 @Target({ElementType.FIELD})
 public @interface GdxTTFFont {
 	public String value();
+	
+	public int percentScreenWidthSize() default -1;
+	public int percentScreenHeightSize() default -1;
+	
 	public int size() default 16;
 	public boolean mono() default false;
 	public Hinting hinting() default Hinting.Medium;

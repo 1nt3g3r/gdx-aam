@@ -1,5 +1,6 @@
 package ua.com.integer.gdx.annotation.asset.manager.imp.ttf;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 
@@ -10,8 +11,16 @@ public class GdxTTFFontLoader extends AnnotationAssetLoader{
 	@Override
 	public void performLoading(AnnotationAssetManager manager) throws Exception {
 		GdxTTFFont gdxFont = (GdxTTFFont) annotation;
+		
+		int fontSize = gdxFont.size();
+		if (gdxFont.percentScreenWidthSize() > 0) {
+			fontSize = (int) ((float) Gdx.graphics.getWidth() * gdxFont.percentScreenWidthSize());
+		} else if (gdxFont.percentScreenHeightSize() > 0) {
+			fontSize = (int) ((float) Gdx.graphics.getHeight() * gdxFont.percentScreenHeightSize());
+		}
+		
 		FreeTypeFontParameter param = new FreeTypeFontParameter();
-		param.size = gdxFont.size();
+		param.size = fontSize;
 		param.mono = gdxFont.mono();
 		param.hinting = gdxFont.hinting();
 		param.color = Color.valueOf(gdxFont.color());
@@ -34,7 +43,7 @@ public class GdxTTFFontLoader extends AnnotationAssetLoader{
 		param.magFilter = gdxFont.magFilter();
 		param.incremental = gdxFont.incremental();
 
-		manager.getFontManager().loadFont(gdxFont.value(), gdxFont.size(), gdxFont.characters(), param);
-		field.set(object, manager.getFontManager().getFont(gdxFont.value(), gdxFont.size()));
+		manager.getFontManager().loadFont(gdxFont.value(), fontSize, gdxFont.characters(), param);
+		field.set(object, manager.getFontManager().getFont(gdxFont.value(), fontSize));
 	}
 }
