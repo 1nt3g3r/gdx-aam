@@ -13,8 +13,8 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.Hinting;
 public @interface GdxTTFFont {
 	public String value();
 	
-	public int percentScreenWidthSize() default -1;
-	public int percentScreenHeightSize() default -1;
+	public float percentScreenWidthSize() default -1;
+	public float percentScreenHeightSize() default -1;
 	
 	public int size() default 16;
 	public boolean mono() default false;

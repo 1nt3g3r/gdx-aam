@@ -5,6 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 
 @Retention(RetentionPolicy.RUNTIME)
@@ -13,5 +14,6 @@ public @interface GdxImage {
 	public String atlas();
 	public String region();
 	public boolean fullScreen() default false;
-	public Scaling scaling() default Scaling.none;
+	public int align() default Align.center;
+	public Scaling scaling() default Scaling.fit;
 }

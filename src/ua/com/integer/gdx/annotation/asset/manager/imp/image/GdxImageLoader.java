@@ -15,6 +15,7 @@ public class GdxImageLoader extends AnnotationAssetLoader {
 		if (gdxImage.fullScreen()) {
 			image.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		}
+		image.setAlign(gdxImage.align());
 		field.set(object, image);
 	}
 }
