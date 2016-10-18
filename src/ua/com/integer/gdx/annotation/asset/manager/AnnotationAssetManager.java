@@ -9,10 +9,13 @@ import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.ObjectMap;
+import com.badlogic.gdx.utils.Scaling;
 
 import ua.com.integer.gdx.annotation.asset.manager.imp.atlas.GdxTextureAtlas;
 import ua.com.integer.gdx.annotation.asset.manager.imp.atlas.GdxTextureAtlasLoader;
@@ -175,8 +178,31 @@ public class AnnotationAssetManager implements Disposable {
 			return atlas.findRegion(regionName);
 		}
 	}
-	
+
+	public Image createFitImage(String atlasName, String regionName) {
+		return createImage(atlasName, regionName, Scaling.fit);
+	}
+
+	public Image createFillImage(String atlasName, String regionName) {
+		return createImage(atlasName, regionName, Scaling.fill);
+	}
+
+	public Image createImage(String atlasName, String regionName, Scaling scaling) {
+		Image result = new Image(getRegion(atlasName, regionName));
+		result.setScaling(scaling);
+		return result;
+	}
+
+	public Image createNinePatchImage(String atlasName, String regionName, int left, int right, int top, int bottom) {
+		NinePatch ninePatch = new NinePatch(getRegion(atlasName, regionName), left, right, top, bottom);
+		return new Image(ninePatch);
+	}
+
 	public Texture getTexture(String textureName) {
+		return getTexture(textureName, Texture.TextureFilter.Linear);
+	}
+
+	public Texture getTexture(String textureName, Texture.TextureFilter filter) {
 		String fullTexturePath = findExistingAssetPath(textureFolders, textureName, textureExtensions);
 		if (fullTexturePath == null) {
 			return null;
@@ -186,7 +212,9 @@ public class AnnotationAssetManager implements Disposable {
 				assetManager.finishLoading();
 			}
 			
-			return assetManager.get(fullTexturePath, Texture.class);
+			Texture result = assetManager.get(fullTexturePath, Texture.class);
+			result.setFilter(filter, filter);
+			return result;
 		}
 	}
 	
