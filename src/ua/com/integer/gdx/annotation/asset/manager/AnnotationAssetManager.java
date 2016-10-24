@@ -1,8 +1,5 @@
 package ua.com.integer.gdx.annotation.asset.manager;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
@@ -17,6 +14,9 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.Scaling;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+
 import ua.com.integer.gdx.annotation.asset.manager.imp.atlas.GdxTextureAtlas;
 import ua.com.integer.gdx.annotation.asset.manager.imp.atlas.GdxTextureAtlasLoader;
 import ua.com.integer.gdx.annotation.asset.manager.imp.image.GdxImage;
@@ -29,14 +29,12 @@ import ua.com.integer.gdx.annotation.asset.manager.imp.sound.GdxSound;
 import ua.com.integer.gdx.annotation.asset.manager.imp.sound.GdxSoundLoader;
 import ua.com.integer.gdx.annotation.asset.manager.imp.texture.GdxTexture;
 import ua.com.integer.gdx.annotation.asset.manager.imp.texture.GdxTextureLoader;
-import ua.com.integer.gdx.annotation.asset.manager.imp.ttf.GdxTTFFont;
-import ua.com.integer.gdx.annotation.asset.manager.imp.ttf.GdxTTFFontLoader;
 
 public class AnnotationAssetManager implements Disposable {
 	private StringBuilder tmpStringBuilder = new StringBuilder();
 
 	private Array<String> textureFolders = new Array<>(new String[] {"textures"});
-	private Array<String> textureExtensions = new Array<>(new String[] {"jpg", "png"});
+	private Array<String> textureExtensions = new Array<>(new String[] {"jpg", "png", "etc1"});
 	
 	private Array<String> soundFolders = new Array<>(new String[] {"sounds"});
 	private Array<String> soundExtensions = new Array<>(new String[] {"mp3", "ogg"});
@@ -47,12 +45,8 @@ public class AnnotationAssetManager implements Disposable {
 	private Array<String> atlasFolders = new Array<String>(new String[] {"atlases"});
 	private Array<String> atlasExtensions = new Array<String>(new String[] {"atlas", "pack"});
 	
-	private Array<String> i18nFolders = new Array<String>(new String[] {"i18n"});
-	
 	private AssetManager assetManager;
 	private ObjectMap<Class<? extends Annotation>, AnnotationAssetLoader> loaders = new ObjectMap<>();
-	
-	private FreetypeFontManager fontManager;
 	
 	public AnnotationAssetManager() {
 		this(new InternalFileHandleResolver());
@@ -60,15 +54,13 @@ public class AnnotationAssetManager implements Disposable {
 
 	public AnnotationAssetManager(FileHandleResolver resolver) {
 		assetManager = new AssetManager(resolver);
-		fontManager = new FreetypeFontManager();
-		
+
 		addLoader(GdxTextureAtlas.class, new GdxTextureAtlasLoader());
 		addLoader(GdxImage.class, new GdxImageLoader());
 		addLoader(GdxMusic.class, new GdxMusicLoader());
 		addLoader(GdxSound.class, new GdxSoundLoader());
 		addLoader(GdxTextureRegion.class, new GdxTextureRegionLoader());
 		addLoader(GdxTexture.class, new GdxTextureLoader());
-		addLoader(GdxTTFFont.class, new GdxTTFFontLoader());
 	}
 	
 	public AnnotationAssetManager addTextureFolder(String folder) {
@@ -110,18 +102,9 @@ public class AnnotationAssetManager implements Disposable {
 		atlasExtensions.add(extension);
 		return this;
 	}
-	
-	public AnnotationAssetManager addI18NFolder(String folder) {
-		i18nFolders.add(folder);
-		return this;
-	}
-	
+
 	public AssetManager getAssetManager() {
 		return assetManager;
-	}
-	
-	public FreetypeFontManager getFontManager() {
-		return fontManager;
 	}
 	
 	public AnnotationAssetManager addLoader(Class<? extends Annotation> annotation, AnnotationAssetLoader loader) {
@@ -279,7 +262,6 @@ public class AnnotationAssetManager implements Disposable {
 	@Override
 	public void dispose() {
 		assetManager.dispose();
-		fontManager.dispose();
 	}
 	
 	public String findExistingAssetPath(Array<String> searchFolders, String assetName, Array<String> assetExtensions) {
