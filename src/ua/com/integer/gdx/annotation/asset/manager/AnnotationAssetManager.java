@@ -11,24 +11,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.Scaling;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-
-import ua.com.integer.gdx.annotation.asset.manager.imp.atlas.GdxTextureAtlas;
-import ua.com.integer.gdx.annotation.asset.manager.imp.atlas.GdxTextureAtlasLoader;
-import ua.com.integer.gdx.annotation.asset.manager.imp.image.GdxImage;
-import ua.com.integer.gdx.annotation.asset.manager.imp.image.GdxImageLoader;
-import ua.com.integer.gdx.annotation.asset.manager.imp.music.GdxMusic;
-import ua.com.integer.gdx.annotation.asset.manager.imp.music.GdxMusicLoader;
-import ua.com.integer.gdx.annotation.asset.manager.imp.region.GdxTextureRegion;
-import ua.com.integer.gdx.annotation.asset.manager.imp.region.GdxTextureRegionLoader;
-import ua.com.integer.gdx.annotation.asset.manager.imp.sound.GdxSound;
-import ua.com.integer.gdx.annotation.asset.manager.imp.sound.GdxSoundLoader;
-import ua.com.integer.gdx.annotation.asset.manager.imp.texture.GdxTexture;
-import ua.com.integer.gdx.annotation.asset.manager.imp.texture.GdxTextureLoader;
 
 public class AnnotationAssetManager implements Disposable {
 	private StringBuilder tmpStringBuilder = new StringBuilder();
@@ -46,21 +29,13 @@ public class AnnotationAssetManager implements Disposable {
 	private Array<String> atlasExtensions = new Array<String>(new String[] {"atlas", "pack"});
 	
 	private AssetManager assetManager;
-	private ObjectMap<Class<? extends Annotation>, AnnotationAssetLoader> loaders = new ObjectMap<>();
-	
+
 	public AnnotationAssetManager() {
 		this(new InternalFileHandleResolver());
 	}
 
 	public AnnotationAssetManager(FileHandleResolver resolver) {
 		assetManager = new AssetManager(resolver);
-
-		addLoader(GdxTextureAtlas.class, new GdxTextureAtlasLoader());
-		addLoader(GdxImage.class, new GdxImageLoader());
-		addLoader(GdxMusic.class, new GdxMusicLoader());
-		addLoader(GdxSound.class, new GdxSoundLoader());
-		addLoader(GdxTextureRegion.class, new GdxTextureRegionLoader());
-		addLoader(GdxTexture.class, new GdxTextureLoader());
 	}
 	
 	public AnnotationAssetManager addTextureFolder(String folder) {
@@ -106,29 +81,7 @@ public class AnnotationAssetManager implements Disposable {
 	public AssetManager getAssetManager() {
 		return assetManager;
 	}
-	
-	public AnnotationAssetManager addLoader(Class<? extends Annotation> annotation, AnnotationAssetLoader loader) {
-		loaders.put(annotation, loader);
-		return this;
-	}
-	
-	public void loadAnnotations(Object o) {
-		Field[] fields = o.getClass().getDeclaredFields();
-		for(int i = 0; i < fields.length; i++) {
-			checkField(o, fields[i]);
-		}
-	}
-	
-	private void checkField(Object o, Field field) {
-		Annotation[] annotations = field.getDeclaredAnnotations();
-		for(int i = 0; i < annotations.length; i++) {
-			AnnotationAssetLoader loader = loaders.get(annotations[i].annotationType());
-			if (loader != null) {
-				loader.load(this, o, field, annotations[i]);
-			}
-		}
-	}
-	
+
 	public TextureAtlas getAtlas(String atlasName) {
 		String fullAtlasPath = findExistingAssetPath(atlasFolders, atlasName, atlasExtensions);
 		if (fullAtlasPath == null) {
