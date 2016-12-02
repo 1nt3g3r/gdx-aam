@@ -1,16 +1,21 @@
 package ua.com.integer.gdx.annotation.asset.manager;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.Scaling;
 
 public class AnnotationAssetManager implements Disposable {
@@ -27,14 +32,26 @@ public class AnnotationAssetManager implements Disposable {
 	
 	private Array<String> atlasFolders = new Array<String>(new String[] {"atlases"});
 	private Array<String> atlasExtensions = new Array<String>(new String[] {"atlas", "pack"});
-	
+
+    private ObjectMap<String, BitmapFont> fonts = new ObjectMap<>();
+
+    private String fontPath = "fonts";
+
 	private AssetManager assetManager;
 
 	public AnnotationAssetManager() {
 		this(new InternalFileHandleResolver());
 	}
 
-	public AnnotationAssetManager(FileHandleResolver resolver) {
+    public void setFontPath(String fontPath) {
+        this.fontPath = fontPath;
+    }
+
+    public String getFontPath() {
+        return fontPath;
+    }
+
+    public AnnotationAssetManager(FileHandleResolver resolver) {
 		assetManager = new AssetManager(resolver);
 	}
 	
@@ -81,6 +98,20 @@ public class AnnotationAssetManager implements Disposable {
 	public AssetManager getAssetManager() {
 		return assetManager;
 	}
+
+    public BitmapFont getFont(String fontName) {
+        if (!fonts.containsKey(fontName)) {
+            ObjectMap<String, String> fontParams = new Json().fromJson(ObjectMap.class, Gdx.files.internal(fontPath + "/" + fontName + ".description"));
+            String atlas = fontParams.get("atlas");
+            String region = fontParams.get("region");
+            TextureRegion fontRegion = getRegion(atlas, region);
+
+            BitmapFont font = new BitmapFont(Gdx.files.internal(fontPath + "/" + fontName + ".fnt"), fontRegion);
+            fonts.put(fontName, font);
+        }
+
+        return fonts.get(fontName);
+    }
 
 	public TextureAtlas getAtlas(String atlasName) {
 		String fullAtlasPath = findExistingAssetPath(atlasFolders, atlasName, atlasExtensions);
@@ -215,6 +246,11 @@ public class AnnotationAssetManager implements Disposable {
 	@Override
 	public void dispose() {
 		assetManager.dispose();
+
+        for(BitmapFont font : fonts.values()) {
+            font.dispose();
+        }
+        fonts.clear();
 	}
 	
 	public String findExistingAssetPath(Array<String> searchFolders, String assetName, Array<String> assetExtensions) {
